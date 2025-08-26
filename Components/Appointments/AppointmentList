@@ -1,0 +1,120 @@
+
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Calendar, Clock, User, Stethoscope, FileText } from "lucide-react";
+import { format } from "date-fns";
+
+const statusColors = {
+  'Scheduled': 'bg-blue-100 text-blue-800',
+  'Completed': 'bg-green-100 text-green-800',
+  'Cancelled': 'bg-red-100 text-red-800',
+  'No-show': 'bg-gray-100 text-gray-800'
+};
+
+export default function AppointmentList({ appointments, patients, doctors, isLoading }) {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Array(6).fill(0).map((_, i) => (
+          <Card key={i} className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-6 w-20" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (appointments.length === 0) {
+    return (
+      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+        <CardContent className="p-12 text-center">
+          <Calendar className="w-16 h-16 mx-auto mb-4 text-slate-300" />
+          <h3 className="text-xl font-semibold text-slate-600 mb-2">No appointments found</h3>
+          <p className="text-slate-500">Book your first appointment to get started.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {appointments.map((appointment) => {
+        const patient = patients.find(p => p.id === appointment.patient_id);
+        const doctor = doctors.find(d => d.id === appointment.doctor_id);
+        
+        return (
+          <Card key={appointment.id} className="group bg-white/70 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+            <CardHeader className="pb-4">
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-purple-500" />
+                  <span className="text-sm font-medium text-slate-600">
+                    {format(new Date(appointment.appointment_date), 'MMM d, yyyy')}
+                  </span>
+                </div>
+                <Badge 
+                  className={statusColors[appointment.status] || 'bg-gray-100 text-gray-800'}
+                >
+                  {appointment.status}
+                </Badge>
+              </div>
+              {appointment.appointment_time && (
+                <div className="flex items-center gap-2 mt-2">
+                  <Clock className="w-4 h-4 text-slate-400" />
+                  <span className="text-sm text-slate-600">{appointment.appointment_time}</span>
+                </div>
+              )}
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <User className="w-4 h-4 text-blue-400" />
+                  <span className="font-medium text-slate-800">
+                    {patient ? patient.name : 'Unknown Patient'}
+                  </span>
+                  {patient && (
+                    <span className="text-slate-500">({patient.age}y, {patient.gender})</span>
+                  )}
+                </div>
+                
+                <div className="flex items-center gap-2 text-sm">
+                  <Stethoscope className="w-4 h-4 text-emerald-400" />
+                  <span className="font-medium text-slate-800">
+                    Dr. {doctor ? doctor.name : 'Unknown Doctor'}
+                  </span>
+                </div>
+                
+                {appointment.reason && (
+                  <div className="flex items-start gap-2 text-sm">
+                    <FileText className="w-4 h-4 text-orange-400 mt-0.5 flex-shrink-0" />
+                    <span className="text-slate-600 line-clamp-2">{appointment.reason}</span>
+                  </div>
+                )}
+              </div>
+              
+              {appointment.notes && (
+                <div className="pt-3 border-t border-slate-100">
+                  <p className="text-xs text-slate-500 line-clamp-2">{appointment.notes}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
