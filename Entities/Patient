@@ -1,0 +1,54 @@
+{
+  "name": "Patient",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Full name of the patient"
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 150,
+      "description": "Patient's age"
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "Male",
+        "Female",
+        "Other"
+      ],
+      "description": "Patient's gender"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Contact phone number"
+    },
+    "address": {
+      "type": "string",
+      "description": "Patient's address"
+    },
+    "emergency_contact": {
+      "type": "string",
+      "description": "Emergency contact information"
+    },
+    "medical_history": {
+      "type": "string",
+      "description": "Brief medical history"
+    }
+  },
+  "required": [
+    "name",
+    "age",
+    "gender"
+  ],
+  "rls": {
+    "write": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}
