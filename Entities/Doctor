@@ -1,0 +1,70 @@
+{
+  "name": "Doctor",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Doctor's full name"
+    },
+    "specialization": {
+      "type": "string",
+      "enum": [
+        "Cardiology",
+        "Dermatology",
+        "Endocrinology",
+        "Gastroenterology",
+        "General Medicine",
+        "Neurology",
+        "Oncology",
+        "Orthopedics",
+        "Pediatrics",
+        "Psychiatry",
+        "Radiology",
+        "Surgery"
+      ],
+      "description": "Medical specialization"
+    },
+    "experience_years": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Years of medical experience"
+    },
+    "qualifications": {
+      "type": "string",
+      "description": "Medical qualifications and degrees"
+    },
+    "availability_days": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ]
+      },
+      "description": "Days when doctor is available"
+    },
+    "consultation_fee": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Consultation fee amount"
+    }
+  },
+  "required": [
+    "name",
+    "specialization"
+  ],
+  "rls": {
+    "read": {},
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
