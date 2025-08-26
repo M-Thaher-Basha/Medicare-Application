@@ -1,0 +1,166 @@
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar, X } from "lucide-react";
+
+const TIME_SLOTS = [
+  "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
+  "12:00 PM", "12:30 PM", "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM",
+  "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM"
+];
+
+export default function AppointmentForm({ patients, doctors, onSubmit, onCancel }) {
+  const [formData, setFormData] = useState({
+    patient_id: '',
+    doctor_id: '',
+    appointment_date: '',
+    appointment_time: '',
+    reason: '',
+    notes: ''
+  });
+
+  const handleChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white shadow-2xl">
+        <CardHeader className="border-b bg-gradient-to-r from-purple-50 to-pink-50">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-xl text-slate-800">
+              <Calendar className="w-5 h-5 text-purple-500" />
+              Book New Appointment
+            </CardTitle>
+            <Button variant="ghost" size="icon" onClick={onCancel}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-slate-700 font-medium">Patient *</Label>
+                <Select 
+                  value={formData.patient_id} 
+                  onValueChange={(value) => handleChange('patient_id', value)}
+                  required
+                >
+                  <SelectTrigger className="border-slate-200">
+                    <SelectValue placeholder="Select patient" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {patients.map((patient) => (
+                      <SelectItem key={patient.id} value={patient.id}>
+                        {patient.name} ({patient.age} years)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-slate-700 font-medium">Doctor *</Label>
+                <Select 
+                  value={formData.doctor_id} 
+                  onValueChange={(value) => handleChange('doctor_id', value)}
+                  required
+                >
+                  <SelectTrigger className="border-slate-200">
+                    <SelectValue placeholder="Select doctor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {doctors.map((doctor) => (
+                      <SelectItem key={doctor.id} value={doctor.id}>
+                        Dr. {doctor.name} ({doctor.specialization})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="appointment_date" className="text-slate-700 font-medium">Date *</Label>
+                <Input
+                  id="appointment_date"
+                  type="date"
+                  value={formData.appointment_date}
+                  onChange={(e) => handleChange('appointment_date', e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                  required
+                  className="border-slate-200"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-slate-700 font-medium">Time</Label>
+                <Select 
+                  value={formData.appointment_time} 
+                  onValueChange={(value) => handleChange('appointment_time', value)}
+                >
+                  <SelectTrigger className="border-slate-200">
+                    <SelectValue placeholder="Select time slot" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TIME_SLOTS.map((time) => (
+                      <SelectItem key={time} value={time}>
+                        {time}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="reason" className="text-slate-700 font-medium">Reason for Visit</Label>
+              <Input
+                id="reason"
+                value={formData.reason}
+                onChange={(e) => handleChange('reason', e.target.value)}
+                placeholder="Brief description of the reason for visit"
+                className="border-slate-200"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="notes" className="text-slate-700 font-medium">Additional Notes</Label>
+              <Textarea
+                id="notes"
+                value={formData.notes}
+                onChange={(e) => handleChange('notes', e.target.value)}
+                placeholder="Any additional notes or special requirements"
+                className="border-slate-200 h-20"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 pt-6 border-t">
+              <Button type="button" variant="outline" onClick={onCancel}>
+                Cancel
+              </Button>
+              <Button 
+                type="submit"
+                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
+              >
+                Book Appointment
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
