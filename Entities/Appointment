@@ -1,0 +1,47 @@
+{
+  "name": "Appointment",
+  "type": "object",
+  "properties": {
+    "patient_id": {
+      "type": "string",
+      "description": "ID of the patient"
+    },
+    "doctor_id": {
+      "type": "string",
+      "description": "ID of the doctor"
+    },
+    "appointment_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of appointment"
+    },
+    "appointment_time": {
+      "type": "string",
+      "description": "Time slot for appointment"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Scheduled",
+        "Completed",
+        "Cancelled",
+        "No-show"
+      ],
+      "default": "Scheduled",
+      "description": "Status of the appointment"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Reason for visit"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "patient_id",
+    "doctor_id",
+    "appointment_date"
+  ]
+}
