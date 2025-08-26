@@ -1,0 +1,122 @@
+
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Stethoscope, GraduationCap, Clock, DollarSign } from "lucide-react";
+
+const specializationColors = {
+  'Cardiology': 'bg-red-100 text-red-800',
+  'Dermatology': 'bg-pink-100 text-pink-800', 
+  'Endocrinology': 'bg-purple-100 text-purple-800',
+  'Gastroenterology': 'bg-orange-100 text-orange-800',
+  'General Medicine': 'bg-blue-100 text-blue-800',
+  'Neurology': 'bg-indigo-100 text-indigo-800',
+  'Oncology': 'bg-gray-100 text-gray-800',
+  'Orthopedics': 'bg-green-100 text-green-800',
+  'Pediatrics': 'bg-yellow-100 text-yellow-800',
+  'Psychiatry': 'bg-teal-100 text-teal-800',
+  'Radiology': 'bg-cyan-100 text-cyan-800',
+  'Surgery': 'bg-emerald-100 text-emerald-800'
+};
+
+export default function DoctorList({ doctors, isLoading }) {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Array(6).fill(0).map((_, i) => (
+          <Card key={i} className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4 mb-4">
+                <Skeleton className="w-16 h-16 rounded-full" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-3/4" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (doctors.length === 0) {
+    return (
+      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+        <CardContent className="p-12 text-center">
+          <Stethoscope className="w-16 h-16 mx-auto mb-4 text-slate-300" />
+          <h3 className="text-xl font-semibold text-slate-600 mb-2">No doctors available</h3>
+          <p className="text-slate-500">Doctor profiles will appear here once added.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {doctors.map((doctor) => (
+        <Card key={doctor.id} className="group bg-white/70 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+          <CardHeader className="pb-4">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+                <Stethoscope className="w-8 h-8 text-white" />
+              </div>
+              <div className="flex-1">
+                <CardTitle className="text-lg text-slate-800 group-hover:text-emerald-600 transition-colors">
+                  Dr. {doctor.name}
+                </CardTitle>
+                <Badge 
+                  className={`mt-2 ${specializationColors[doctor.specialization] || 'bg-gray-100 text-gray-800'}`}
+                >
+                  {doctor.specialization}
+                </Badge>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {doctor.qualifications && (
+              <div className="flex items-start gap-2 text-sm text-slate-600">
+                <GraduationCap className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                <span className="line-clamp-2">{doctor.qualifications}</span>
+              </div>
+            )}
+            
+            <div className="flex items-center justify-between text-sm">
+              {doctor.experience_years && (
+                <div className="flex items-center gap-1 text-slate-600">
+                  <Clock className="w-4 h-4 text-slate-400" />
+                  <span>{doctor.experience_years} years exp.</span>
+                </div>
+              )}
+              
+              {doctor.consultation_fee && (
+                <div className="flex items-center gap-1 text-slate-600">
+                  <DollarSign className="w-4 h-4 text-slate-400" />
+                  <span>${doctor.consultation_fee}</span>
+                </div>
+              )}
+            </div>
+
+            {doctor.availability_days && doctor.availability_days.length > 0 && (
+              <div className="pt-2 border-t border-slate-100">
+                <p className="text-xs text-slate-500 mb-2">Available on:</p>
+                <div className="flex flex-wrap gap-1">
+                  {doctor.availability_days.map((day) => (
+                    <Badge key={day} variant="outline" className="text-xs">
+                      {day.slice(0, 3)}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
