@@ -1,0 +1,91 @@
+import React, { useState, useEffect } from "react";
+import { Patient } from "@/entities/Patient";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Plus, Search } from "lucide-react";
+
+import PatientForm from "../components/patients/PatientForm";
+import PatientList from "../components/patients/PatientList";
+
+export default function PatientsPage() {
+  const [patients, setPatients] = useState([]);
+  const [filteredPatients, setFilteredPatients] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadPatients();
+  }, []);
+
+  useEffect(() => {
+    const filtered = patients.filter(patient => 
+      patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.phone?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredPatients(filtered);
+  }, [patients, searchTerm]);
+
+  const loadPatients = async () => {
+    setIsLoading(true);
+    const data = await Patient.list('-created_date');
+    setPatients(data);
+    setIsLoading(false);
+  };
+
+  const handleAddPatient = async (patientData) => {
+    await Patient.create(patientData);
+    setShowForm(false);
+    loadPatients();
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+              Patient Management
+            </h1>
+            <p className="text-slate-600 mt-2 text-lg">
+              Manage patient records and information
+            </p>
+          </div>
+          <Button
+            onClick={() => setShowForm(true)}
+            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add New Patient
+          </Button>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+          <Input
+            placeholder="Search patients..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-white/70 border-slate-200"
+          />
+        </div>
+
+        {/* Patient Form Modal */}
+        {showForm && (
+          <PatientForm
+            onSubmit={handleAddPatient}
+            onCancel={() => setShowForm(false)}
+          />
+        )}
+
+        {/* Patient List */}
+        <PatientList 
+          patients={filteredPatients}
+          isLoading={isLoading}
+        />
+      </div>
+    </div>
+  );
+}
