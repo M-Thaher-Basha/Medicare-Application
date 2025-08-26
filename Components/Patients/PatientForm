@@ -1,0 +1,159 @@
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { UserPlus, X } from "lucide-react";
+
+export default function PatientForm({ onSubmit, onCancel }) {
+  const [formData, setFormData] = useState({
+    name: '',
+    age: '',
+    gender: '',
+    phone: '',
+    address: '',
+    emergency_contact: '',
+    medical_history: ''
+  });
+
+  const handleChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit({
+      ...formData,
+      age: parseInt(formData.age)
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white shadow-2xl">
+        <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-xl text-slate-800">
+              <UserPlus className="w-5 h-5 text-blue-500" />
+              Add New Patient
+            </CardTitle>
+            <Button variant="ghost" size="icon" onClick={onCancel}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-slate-700 font-medium">Full Name *</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => handleChange('name', e.target.value)}
+                  placeholder="Enter patient's full name"
+                  required
+                  className="border-slate-200"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="age" className="text-slate-700 font-medium">Age *</Label>
+                <Input
+                  id="age"
+                  type="number"
+                  min="0"
+                  max="150"
+                  value={formData.age}
+                  onChange={(e) => handleChange('age', e.target.value)}
+                  placeholder="Enter age"
+                  required
+                  className="border-slate-200"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-slate-700 font-medium">Gender *</Label>
+                <Select 
+                  value={formData.gender} 
+                  onValueChange={(value) => handleChange('gender', value)}
+                  required
+                >
+                  <SelectTrigger className="border-slate-200">
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Male">Male</SelectItem>
+                    <SelectItem value="Female">Female</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-slate-700 font-medium">Phone Number</Label>
+                <Input
+                  id="phone"
+                  value={formData.phone}
+                  onChange={(e) => handleChange('phone', e.target.value)}
+                  placeholder="Enter phone number"
+                  className="border-slate-200"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="address" className="text-slate-700 font-medium">Address</Label>
+              <Textarea
+                id="address"
+                value={formData.address}
+                onChange={(e) => handleChange('address', e.target.value)}
+                placeholder="Enter patient's address"
+                className="border-slate-200 h-20"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="emergency_contact" className="text-slate-700 font-medium">Emergency Contact</Label>
+              <Input
+                id="emergency_contact"
+                value={formData.emergency_contact}
+                onChange={(e) => handleChange('emergency_contact', e.target.value)}
+                placeholder="Emergency contact name and phone"
+                className="border-slate-200"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="medical_history" className="text-slate-700 font-medium">Medical History</Label>
+              <Textarea
+                id="medical_history"
+                value={formData.medical_history}
+                onChange={(e) => handleChange('medical_history', e.target.value)}
+                placeholder="Brief medical history (allergies, conditions, etc.)"
+                className="border-slate-200 h-24"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 pt-6 border-t">
+              <Button type="button" variant="outline" onClick={onCancel}>
+                Cancel
+              </Button>
+              <Button 
+                type="submit"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+              >
+                Add Patient
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
